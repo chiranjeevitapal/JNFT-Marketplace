@@ -1,0 +1,41 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.4'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id "com.github.node-gradle.node" version "3.2.1"
+	id 'java'
+}
+
+group = 'com.project'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+node {
+	version = '16.14.2'
+	npmVersion = '8.5.0'
+	download = true
+	nodeModulesDir = file("./angular-frontend")
+	npmInstallCommand = "install"
+}
+
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation group: 'org.web3j', name: 'web3j-spring-boot-starter', version: '1.6.0'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+task buildWeb(type: NpmTask, dependsOn: 'npmInstall') {
+	group = 'build'
+	description = 'Compile client side assets first'
+	args = ['run', 'build-prod']
+}
+
+tasks.build.dependsOn(buildWeb)
